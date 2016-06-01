@@ -7,13 +7,74 @@
 </head>
 <body>
     <div id="container">
-        <div class="contactCard">
-            <h1 class="name">John Doe</h1>
-            <p class="address">Oradea, 1234 Doe Av.</p>
-            <p class="email">johndoe@gmail.com</p>
-            <p class="phone">+36 20 555 5555</p>
-        </div>
+        
     </div>
+    <script type="text/javascript">
+        (function(){
+            var numOfContacts = 10;
+            var url = "http://www.filltext.com/?rows=" + numOfContacts +
+                    "&pretty=true&" +
+                    "fname={firstName}&" +
+                    "lname={lastName}&" +
+                    "city={city}&" +
+                    "address={streetAddress}&" +
+                    "email={email}&" +
+                    "phone={phone|format}";
+            console.log(url);
+            var contactsJSON = new XMLHttpRequest();
+            contactsJSON.onreadystatechange = onReady;
+            contactsJSON.open('GET', url, true);
+            contactsJSON.send();
 
+            function Contact(firstName, lastName, city, address, email, phone){
+                this.firstName = firstName;
+                this.lastName = lastName;
+                this.city = city;
+                this.address = address;
+                this.email = email;
+                this.phone = phone;
+            }
+
+            function onReady() {
+                if (contactsJSON.readyState == 4) {
+                    var response = contactsJSON.responseText;
+                    var contacts = JSON.parse(response);
+
+                    console.log(contacts);
+
+                    for (var contact in contacts){
+                        var person;
+                        if (contacts.hasOwnProperty(contact)) {
+                            var c = contacts[contact];
+                            person = new Contact(c["fname"], c["lname"], c["city"], c["address"], c["email"], c["phone"]);
+                        }
+                        var contactCard = document.createElement('div'),
+                                name = document.createElement('h1'),
+                                address = document.createElement('p'),
+                                email = document.createElement('p'),
+                                phone = document.createElement('p'),
+                                container = document.getElementById('container');
+
+                        contactCard.className = "contactCard";
+                        name.className = "name";
+                        address.className = "address";
+                        email.className = "email";
+                        phone.className = "phone";
+
+                        name.innerText = person.firstName + " " + person.lastName;
+                        address.innerText = person.city + ", " + person.address;
+                        email.innerText = person.email;
+                        phone.innerText = person.phone;
+
+                        contactCard.appendChild(name);
+                        contactCard.appendChild(address);
+                        contactCard.appendChild(email);
+                        contactCard.appendChild(phone);
+                        container.appendChild(contactCard);
+                    }
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
